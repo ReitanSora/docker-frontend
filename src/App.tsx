@@ -79,16 +79,20 @@ function App() {
           console.log(error)
         }
       } finally {
-        const privateIpRes = await fetch('/api/ip')
-        const privateIp = await privateIpRes.json();
-        setHostIp(privateIp.origin.host)
-        setPrivateIp(privateIp.ip)
+        try {
+          const privateIpRes = await fetch('/api/ip')
+          const privateIp = await privateIpRes.json();
+          setHostIp(privateIp.origin.host)
+          setPrivateIp(privateIp.ip)
 
-        const publicIpRes = await fetch('https://api.ipify.org?format=json')
-        const publicIp = await publicIpRes.json();
-        setPublicIp(publicIp.ip)
+          const publicIpRes = await fetch('https://api.ipify.org?format=json')
+          const publicIp = await publicIpRes.json();
+          setPublicIp(publicIp.ip)
 
-        setIsLoaded(true);
+          setIsLoaded(true);
+        } catch {
+          setIsLoaded(true);
+        }
       }
     }
 
