@@ -1,0 +1,16 @@
+services:
+  docker-frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - VITE_TUNNEL_BASE_URL=${VITE_TUNNEL_BASE_URL}
+      - VITE_BASE_URL=${VITE_BASE_URL}
+    ports:
+      - "5173:5173"
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    external: true
