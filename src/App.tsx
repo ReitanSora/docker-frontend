@@ -9,7 +9,6 @@ import {
   TableCell
 } from "@heroui/react";
 import { Skeleton } from "@heroui/skeleton";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 interface UserProps {
@@ -35,8 +34,9 @@ function App() {
   const tunnelBaseUrl = import.meta.env.VITE_TUNNEL_BASE_URL;
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
-  const renderCell = useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const renderCell = useCallback((user: UserProps, columnKey: React.Key) => {
+    // @ts-expect-error column key
+    const cellValue = user[columnKey as keyof User];
 
     switch (columnKey) {
       case "name":
