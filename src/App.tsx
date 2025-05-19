@@ -10,9 +10,12 @@ import {
 } from "@heroui/table";
 import { Skeleton } from "@heroui/skeleton";
 import { useDisclosure } from "@heroui/modal"
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEdit, AiOutlineMail } from "react-icons/ai";
 import ModalDelete from './components/ModalDelete';
 import ModalUpdate from './components/ModalUpdate';
+import ModalEmail from './components/ModalEmail';
+import { RiNotionFill } from 'react-icons/ri';
+import { Button } from '@heroui/button';
 
 interface UserProps {
   id?: number;
@@ -48,6 +51,12 @@ function App() {
     isOpen: isModalUpdateOpen,
     onOpen: onModalUpdateOpen,
     onClose: onModalUpdateClose
+  } = useDisclosure();
+
+  const {
+    isOpen: isModalEmailOpen,
+    onOpen: onModalEmailOpen,
+    onClose: onModalEmailClose
   } = useDisclosure();
 
   const readBaseUrl = import.meta.env.VITE_R_BASE_URL;
@@ -91,6 +100,15 @@ function App() {
                 onModalUpdateOpen();
               }}
             />
+            <AiOutlineMail
+              size={20}
+              color='#1D63ED'
+              className='cursor-pointer'
+              onClick={() => {
+                setSelectecUser(user);
+                onModalEmailOpen();
+              }}
+            />
           </div>
         );
       default:
@@ -126,7 +144,7 @@ function App() {
 
   const handleUpdate = async (id: number, data: string) => {
     try {
-      const protocol = readBaseUrl.slice(0, 5);
+      const protocol = operationBaseUrl.slice(0, 5);
       const res = protocol !== 'https'
         ? await fetch(`http://${operationBaseUrl}:5000/users/${id}`, {
           method: 'PATCH',
@@ -159,6 +177,67 @@ function App() {
     }
   }
 
+  const handleSendEmail = async (subject: string, content: string) => {
+    try {
+      const protocol = ipBaseUrl.slice(0, 5);
+      console.log(protocol);
+      const res = protocol !== 'https'
+        ? await fetch(`http://${ipBaseUrl}:5000/services/email`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "subject": subject,
+            "content": content
+          })
+        })
+        : await fetch(`${ipBaseUrl}/services/email`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "subject": subject,
+            "content": content
+          })
+        });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleCreateTableNotion = async (title: string) => {
+    try {
+      const protocol = ipBaseUrl.slice(0, 5);
+      const res = protocol !== 'https'
+        ? await fetch(`http://${ipBaseUrl}:5000/services/notion`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "title": title
+          })
+        })
+        : await fetch(`${ipBaseUrl}/services/notion`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "title": title
+          })
+        });
+
+      const response = await res.json();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     const getUsers = async () => {
       try {
@@ -174,8 +253,8 @@ function App() {
         try {
           const protocol = ipBaseUrl.slice(0, 5);
           const hostIpRes = protocol !== 'https'
-            ? await fetch(`http://${ipBaseUrl}:3000/ip`)
-            : await fetch(`${ipBaseUrl}/ip`)
+            ? await fetch(`http://${ipBaseUrl}:3000/services/ip`)
+            : await fetch(`${ipBaseUrl}/services/ip`)
           const hostIp = await hostIpRes.json();
           setHostIp(hostIp.ip)
 
@@ -243,6 +322,15 @@ function App() {
         }
       </div>
       <div className="footer">
+        <Button
+          startContent={<RiNotionFill />}
+          variant='light'
+          size='sm'
+          onPress={() => {
+            handleCreateTableNotion('Notion API');
+          }}>
+          Crear Tabla en Notion
+        </Button>
         <Skeleton isLoaded={isLoaded} className='rounded-lg px-2 dark:bg-neutral-800'>
           <p>IP Pública servicio: {hostIp}</p>
         </Skeleton>
@@ -250,7 +338,7 @@ function App() {
           <p>IP Pública Cliente: {publicIp}</p>
         </Skeleton>
         <p className="read-the-docs">
-          Stiven Pilca - Programación Distribuida
+          Programación Distribuida
         </p>
       </div>
       <ModalDelete
@@ -264,6 +352,12 @@ function App() {
         onClose={onModalUpdateClose}
         userData={selectedUser}
         handleUpdate={handleUpdate}
+      />
+      <ModalEmail
+        isOpen={isModalEmailOpen}
+        onClose={onModalEmailClose}
+        userData={selectedUser}
+        handleSendEmail={handleSendEmail}
       />
     </div>
   )
