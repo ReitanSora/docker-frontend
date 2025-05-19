@@ -202,6 +202,7 @@ function App() {
             "content": content
           })
         });
+      console.log(res);
     } catch (error) {
       console.log(error);
     }
