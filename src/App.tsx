@@ -277,7 +277,7 @@ function App() {
     <div className='main-container'>
       <div className="header">
         <img src='/docker-mark-blue.svg'></img>
-        <h1>Práctica Docker</h1>
+        <h1>Hola Mundo</h1>
       </div>
       <div className="table-container">
 
