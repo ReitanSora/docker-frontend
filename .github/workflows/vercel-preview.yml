@@ -5,16 +5,22 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches: [master]
-    types: [opened, synchronize]
+    types: [closed]
 
 jobs:
+  verify:
+    name: Check whether a pull request has been merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Success Message
+        run: echo "🎉 A pull request is merged by ${{ github.event.pull_request.merged_by.login}}"
   Deploy-Preview:
-    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+    needs: [verify]
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

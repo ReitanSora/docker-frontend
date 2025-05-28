@@ -8,5 +8,8 @@
   ],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "git": {
+    "deploymentEnabled": false
+  }
 }
